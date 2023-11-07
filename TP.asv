@@ -12,7 +12,11 @@ vertices = [
     2 0 -1;
     0 2 -1;
     0 2 1;
-    2 0 1   ];
+    2 0 1
+    ];
+
+plot_poly(vertices','animate', 'fillcolor','white','edgecolor','red');
+
 %% Links
 L(1) = Revolute('a',1, 'B',1, 'm',1, 'r',[1 0 0]);
 L(2) = Revolute('a',1, 'B',1, 'm',1, 'r',[1 0 0]);
@@ -46,14 +50,9 @@ qcdd(2:end,:)= diff(qcd)/step;
 
 Treal = KR.fkine(qc).T;
 
-%% Preparación del ambiente 3D
-Pcart = squeeze(Tcart(1:3,4,:));
-Preal = squeeze(Treal(1:3,4,:));
-plot3(Pcart(1,:),Pcart(2,:),Pcart(3,:),'LineWidth',2);
-% plot3(Preal(1,:),Preal(2,:),Preal(3,:),'LineWidth',1,'Color', 'g');
-plot_poly(vertices','animate', 'fillcolor','white','edgecolor','red');
-
 %% Animación del Robot final
+KR.plot(qc,'loop','movie','ANIMATION','trail','r','view','top','name','tilesize',0.5
+%%
 anim = Animate('movie.mp4');
 for i=1:length(t)
     KR.plot(qc(i,:));
@@ -142,14 +141,3 @@ title('Error Posición Cartesiana Y');
 ylabel('Error Posición Y (m)');
 xlabel('Tiempo (s)');
 grid on;
-
-%% Gráficos XY
-figure(5);
-plot(x_t,y_t, x_r,y_r);
-xlim([-2 2])
-ylim([-2 2]);
-grid on;
-xlabel('X (m)');
-ylabel('Y (m)');
-legend('Teórico','Real');
-title('Posición del End Effector');
