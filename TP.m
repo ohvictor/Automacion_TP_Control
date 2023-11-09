@@ -7,26 +7,28 @@ l = 1;  %m
 B = 1;  %N/(m/s)
 m = 1;  %kg
 
+mask = [1 1 0 0 0 0];
 %% Wall
 vertices = [
     2 0 -1;
     0 2 -1;
     0 2 1;
     2 0 1   ];
-%% Links
-L(1) = Revolute('a',1, 'B',1, 'm',1, 'r',[1 0 0]);
-L(2) = Revolute('a',1, 'B',1, 'm',1, 'r',[1 0 0]);
+%% Links y Tool
+L(1) = Revolute('a',1, 'B',B, 'm',m, 'r',[1 0 0]);
+L(2) = Revolute('a',1, 'B',B, 'm',m, 'r',[1 0 0]);
+Tool = transl([0 0 0]);
 
 %% Robot
-KR = SerialLink(L);
-KR.name = "RR";
+robot = SerialLink(L, 'tool', Tool);
+robot.name = "RR";
 % KR.teach();
 xaxis(-2,2);
 yaxis(-2,2);
 
 %% Posiciones Inicial
 Ti = transl(1, -1, 0)*trotz(-pi/2);
-Tf = transl(1, 1, 0)*trotz(pi/2);
+Tf = transl(1, 1, 0)*trotz(0);
 
 %% Simulación
 T = 2;
@@ -37,34 +39,42 @@ t = (t0:step:T)';
 %% Trayectoria Cartesiana
 Tcart = ctraj(Ti, Tf, length(t));
 
-qc = KR.ikine(Tcart,'mask',[1 1 0 0 0 0]);
+qc = robot.ikine(Tcart,'mask',mask);
 qcd = zeros(length(t),2);
 qcdd = zeros(length(t),2);
 
 qcd(2:end,:)= diff(qc)/step;
 qcdd(2:end,:)= diff(qcd)/step;
 
-Treal = KR.fkine(qc).T;
+Treal = robot.fkine(qc).T;
+
+%% Preparo la trayectoria para Simulink
+Tsim.time = t;
+Tsim.signals.values = Tcart;
+Tsim.signals.dimensions = [4 4];
 
 %% Preparación del ambiente 3D
 Pcart = squeeze(Tcart(1:3,4,:));
 Preal = squeeze(Treal(1:3,4,:));
+hold on
 plot3(Pcart(1,:),Pcart(2,:),Pcart(3,:),'LineWidth',2);
-% plot3(Preal(1,:),Preal(2,:),Preal(3,:),'LineWidth',1,'Color', 'g');
+plot3(Preal(1,:),Preal(2,:),Preal(3,:),'LineWidth',1,'Color', 'g');
 plot_poly(vertices','animate', 'fillcolor','white','edgecolor','red');
 
 %% Animación del Robot final
 anim = Animate('movie.mp4');
 for i=1:length(t)
-    KR.plot(qc(i,:));
+    robot.plot(qc(i,:));
     anim.add();
 end
 
 for i=length(t):-1:1
-    KR.plot(qc(i,:));
+    robot.plot(qc(i,:));
     anim.add();
 end
 anim.close();
+
+hold off
 
 %% Gráficos Joints
 figure(2);
