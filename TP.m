@@ -27,19 +27,20 @@ xaxis(-2,2);
 yaxis(-2,2);
 
 %% Posiciones Inicial
-Ti = transl(1, -1, 0)*trotz(-pi/2);
-Tf = transl(1, 1, 0)*trotz(0);
+Ti = transl(1, -1, 0)*trotz(0);
+Tf = transl(1, 1, 0)*trotz(pi/2);
 
 %% Simulación
 T = 2;
-step = 0.05;
+step = T/1e2;
 t0 = 0;
 
 t = (t0:step:T)';
 %% Trayectoria Cartesiana
 Tcart = ctraj(Ti, Tf, length(t));
+q0 = [-pi/2 pi/2];
 
-qc = robot.ikine(Tcart,'mask',mask);
+qc = robot.ikine(Tcart,q0,'mask',mask);
 qcd = zeros(length(t),2);
 qcdd = zeros(length(t),2);
 
@@ -49,10 +50,9 @@ qcdd(2:end,:)= diff(qcd)/step;
 Treal = robot.fkine(qc).T;
 
 %% Preparo la trayectoria para Simulink
-Tsim.time = t;
-Tsim.signals.values = Tcart;
-Tsim.signals.dimensions = [4 4];
-
+sim_q = work_prep(t,qc);
+sim_qd = work_prep(t,qcd);
+sim_qdd = work_prep(t,qcdd);
 %% Preparación del ambiente 3D
 Pcart = squeeze(Tcart(1:3,4,:));
 Preal = squeeze(Treal(1:3,4,:));
