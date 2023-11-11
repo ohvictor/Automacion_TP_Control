@@ -38,7 +38,7 @@ t0 = 0;
 t = (t0:step:T)';
 %% Trayectoria Cartesiana
 Tcart = ctraj(Ti, Tf, length(t));
-q0 = [-pi/2 pi/2];
+q0 = [0 -pi/2];
 
 qc = robot.ikine(Tcart,q0,'mask',mask);
 qcd = zeros(length(t),2);
