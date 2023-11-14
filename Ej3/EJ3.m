@@ -8,7 +8,7 @@ B = 1;  %N/(m/s)
 m = 1;  %kg
 
 fd = 10; %N
-Kenv = 1000000; %N/mm
+Kenv = 1000;%000; %N/mm
 
 mask = [1 1 0 0 0 0];
 %% Wall
@@ -43,8 +43,8 @@ WO_T = trotz(-pi/4)*transl(-1,-1,0);
 OW_R2x2 = OW_T(1:2,1:2);
 WO_R2x2 = WO_T(1:2,1:2);
 
-step = 2e-2;
-time = (0:step:1)';
+step = 1e-2;
+time = (0:step:2)';
 
 
 W_Ti = transl(0,0,0);
@@ -131,17 +131,20 @@ Kv = 2*sqrt(Kp);
 %       eta = kv / (2 sqrt(kp))
 
 eta = 1;
-Ts = step;
+Ts = 4*step;
 wn = 5.8335 / Ts;
-kp = wn^2;
-kv = eta*(2*sqrt(kp));
+Kp = wn^2;
+Kv = eta*(2*sqrt(Kp));
 
 %%
-Kvf = 800;
-Kpf = 160000;
+Kvf = 800;%*sqrt(1000);
+Kpf = 160000;%*1000;
+
+%Kvf = Kv;
+%Kpf = Kp;
 %% 
 
-ej3_offset = 0; % 1e-6
+ej3_offset = 1e-5; % 1e-6
 
 %%
 
@@ -163,3 +166,10 @@ anim.close();
 
 hold off
 
+%%
+
+for i = 1:length(out.q.Time)
+    %robot.inertia(out.q.Data(i,:)) - out.M.Data(:,:,i)
+    %inv(out.J.Data(:,:,i))'*out.M.Data(:,:,i)*inv(out.J.Data(:,:,i)) - out.MX.Data(:,:,i)
+    %out.alpha_f.Data(i,:)' - out.MX.Data(:,:,i)*out.f.Data(i,:)'
+end
