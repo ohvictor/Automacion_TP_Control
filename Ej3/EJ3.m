@@ -80,22 +80,24 @@ sim_x.time = time;
 sim_xd.time = time;
 sim_xdd.time = time;
 
-sim_x.signals.values = transl(SE3(W_Tcart));
-sim_xd.signals.values = zeros(length(time),3);
+
+sim_x_SE3 = transl(SE3(W_Tcart));
+sim_x.signals.values = sim_x_SE3(:,1:2);
+sim_xd.signals.values = zeros(length(time),2);
 sim_xd.signals.values(2:end,:) = diff(sim_x.signals.values)/step;
-sim_xdd.signals.values = zeros(length(time),3);
+sim_xdd.signals.values = zeros(length(time),2);
 sim_xdd.signals.values(2:end,:) = diff(sim_xd.signals.values)/step;
 
 %%
 figure(1)
 plot(sim_x.time, sim_x.signals.values)
-legend('W_x','W_y','W_z');
+legend('W_x','W_y');
 figure(2)
 plot(sim_xd.time, sim_xd.signals.values)
-legend('W_xd','W_yd','W_zd');
+legend('W_xd','W_yd');
 figure(3)
 plot(sim_xdd.time, sim_xdd.signals.values)
-legend('W_xdd','W_ydd','W_zdd');
+legend('W_xdd','W_ydd');
 
 %%
 
@@ -103,3 +105,10 @@ legend('W_xdd','W_ydd','W_zdd');
 % I = R.inertia(Q)
 % C = R.coriolis(Q,QD)
 % TAU = R.friction(QD)
+
+%%
+Kv = 2000;
+Kp = 100;
+
+Kvf = 1000;
+Kpf = 200000;
