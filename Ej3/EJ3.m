@@ -8,7 +8,7 @@ B = 1;  %N/(m/s)
 m = 1;  %kg
 
 fd = 10; %N
-Kenv = 1000;%000; %N/mm
+Kenv = 1000000;%000; %N/mm
 
 mask = [1 1 0 0 0 0];
 %% Wall
@@ -18,9 +18,9 @@ vertices = [
     0 2 1;
     2 0 1   ];
 %% Links, Tool y Robot
-L(1) = Revolute('a',1, 'B',B, 'G', 1, 'm',m, 'r',[1 0 0]);
-L(2) = Revolute('a',1, 'B',B, 'G', 1, 'm',m, 'r',[1 0 0]);
-Tool = transl([0 0 0]);
+L(1) = Revolute('a',0, 'B',B, 'm',m, 'r',[1 0 0],'modified');
+L(2) = Revolute('a',1, 'B',B, 'm',m, 'r',[1 0 0],'modified');
+Tool = transl([1 0 0]);
 
 robot = SerialLink(L, 'tool', Tool);
 robot.name = "RR";
@@ -137,8 +137,8 @@ Kp = wn^2;
 Kv = eta*(2*sqrt(Kp));
 
 %%
-Kvf = 800;%*sqrt(1000);
-Kpf = 160000;%*1000;
+Kvf = 800*sqrt(1000);
+Kpf = 160000*1000;
 
 %Kvf = Kv;
 %Kpf = Kp;
