@@ -13,7 +13,7 @@ vertices = [
 %% Links y Tool
 L(1) = Revolute('a',0, 'B',B, 'm',m, 'r',[1 0 0],'modified');
 L(2) = Revolute('a',1, 'B',B, 'm',m, 'r',[1 0 0],'modified');
-Tool = transl([0 0 0]);
+Tool = transl([1 0 0]);
 
 %% Robot
 robot = SerialLink(L, 'tool', Tool);
