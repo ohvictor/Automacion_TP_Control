@@ -43,8 +43,8 @@ WO_T = trotz(-pi/4)*transl(-1,-1,0);
 OW_R2x2 = OW_T(1:2,1:2);
 WO_R2x2 = WO_T(1:2,1:2);
 
-step = 1e-2;
-time = (0:step:2)';
+step = 2e-2;
+time = (0:step:1)';
 
 
 W_Ti = transl(0,0,0);
@@ -107,8 +107,34 @@ legend('W_xdd','W_ydd');
 % TAU = R.friction(QD)
 
 %%
-Kv = 2000;
-Kp = 100;
+% Sistema Críticamente amortiguado
+eta = 1;
+setting_time = step;
+wn = setting_time/eta;
+
+% Ecuación Característica s^2 + 2·e·wn + wn^2
+Kp = (wn^2);
+%Kv = 10 * eye(2);
+Kv = 2*sqrt(Kp);
 
 Kvf = 1000;
-Kpf = 200000;
+Kpf = 2000;
+%% 
+
+
+
+hold on;
+anim = Animate('movie.mp4');
+for i=1:length(t)
+    robot.plot(q_out_norm(i,:));
+    anim.add();
+end
+
+for i=length(t):-1:1
+    robot.plot(q_out_norm(i,:));
+    anim.add();
+end
+anim.close();
+
+hold off
+
