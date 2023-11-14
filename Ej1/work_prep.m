@@ -1,5 +1,5 @@
 function [sim_q] = work_prep(t,A)
-%UNTITLED Summary of this function goes here
+%work_prep Preparo las variables para ser inyectadas al modelo simulink
 %   Detailed explanation goes here
 sim_q.time = t;
 sim_q.signals.values = A;

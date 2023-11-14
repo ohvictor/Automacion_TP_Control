@@ -1,7 +1,4 @@
 # Automacion TP Control
 
-- Modelar el Robot
-- Generar ambiente
-- Control de Posición
-- Control de Fuerza
-- Control híbrido
+## Ejercicio 1
+- Abrir primero main.m y correrlo. Este genera todas las variables necesarias para correr la simulación en Simulink
