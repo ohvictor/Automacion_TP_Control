@@ -119,8 +119,6 @@ Kp = (wn^2);
 Kv = 2*sqrt(Kp);
 %}
 
-%%
-
 %       m xdd + b xd + k x = 0
 %       wn = sqrt(k/m)
 %       eta = b / (2 sqrt(k m))
@@ -129,12 +127,6 @@ Kv = 2*sqrt(Kp);
 %       edd + kv ed + kp e = 0
 %       wn = sqrt(kp)
 %       eta = kv / (2 sqrt(kp))
-
-eta = 1;
-Ts = step;
-wn = 5.8335 / Ts;
-kp = wn^2;
-kv = eta*(2*sqrt(kp));
 
 %%
 Kvf = 800;
