@@ -1,80 +1,86 @@
-%% Constants
 clear variables;
 close all;
 clc
 
-l = 1;  %m
-B = 1;  %N/(m/s)
-m = 1;  %kg
+%% Generación de robots
+% Devuelve robot y robot_dis (80%)
+gen_robot
 
-mask = [1 1 0 0 0 0];
-%% Wall
-vertices = [
-    2 0 -1;
-    0 2 -1;
-    0 2 1;
-    2 0 1   ];
-%% Links y Tool
-L(1) = Revolute('a',1, 'B',B, 'm',m, 'r',[1 0 0]);
-L(2) = Revolute('a',1, 'B',B, 'm',m, 'r',[1 0 0]);
-Tool = transl([0 0 0]);
-
-%% Robot
-robot = SerialLink(L, 'tool', Tool);
-robot.name = "RR";
-% KR.teach();
-xaxis(-2,2);
-yaxis(-2,2);
-
-%% Posiciones Inicial
-Ti = transl(1, -1, 0)*trotz(0);
-Tf = transl(1, 1, 0)*trotz(pi/2);
-
-%% Simulación
+%% Parámetros de simulación
 T = 2;
 step = T/1e2;
 t0 = 0;
 
 t = (t0:step:T)';
-%% Trayectoria Cartesiana
+
+%% Generación de Trayectoria
+% Puntos inicial y final
+Ti = transl(1, -1, 0)*trotz(0);
+Tf = transl(1, 1, 0)*trotz(pi/2);
+
+% Trayectoria cartesiana
 Tcart = ctraj(Ti, Tf, length(t));
 q0 = [0 -pi/2];
 
+% Trayectoria en espacio de joints
+% Posiciones angulares de Joint
 qc = robot.ikine(Tcart,q0,'mask',mask);
-qcd = zeros(length(t),2);
-qcdd = zeros(length(t),2);
 
+% Velocidades angulares de Joint
+qcd = zeros(length(t),2);
 qcd(2:end,:)= diff(qc)/step;
+
+% Aceleraciones angulares de Joint
+qcdd = zeros(length(t),2);
 qcdd(2:end,:)= diff(qcd)/step;
 
-Treal = robot.fkine(qc).T;
+%% Simulación
 
-%% Preparo la trayectoria para Simulink
+% Actualización de trayectoria en Simulink
 sim_q = work_prep(t,qc);
 sim_qd = work_prep(t,qcd);
 sim_qdd = work_prep(t,qcdd);
+
+% Sistema Críticamente amortiguado
+eta = 1;
+setting_time = step;
+wn = setting_time/eta;
+
+% Ecuación Característica s^2 + 2·e·wn + wn^2
+Kp = (wn^2) * eye(2);
+%Kv = 10 * eye(2);
+Kv = 2*sqrt(Kp);
+
+%% Ejecución
+simout = sim('model_norm');
+q_out_norm = simout.q_out.Data;
+
+simout = sim('model_pert');
+q_out_pert = simout.q_out.Data;
+
 %% Preparación del ambiente 3D
-Pcart = squeeze(Tcart(1:3,4,:));
-Preal = squeeze(Treal(1:3,4,:));
-hold on
-plot3(Pcart(1,:),Pcart(2,:),Pcart(3,:),'LineWidth',2);
-plot3(Preal(1,:),Preal(2,:),Preal(3,:),'LineWidth',1,'Color', 'g');
 plot_poly(vertices','animate', 'fillcolor','white','edgecolor','red');
 
+plot3(Pcart(1,:),Pcart(2,:),Pcart(3,:),'LineWidth',2);
+plot3(Preal(1,:),Preal(2,:),Preal(3,:),'LineWidth',1,'Color', 'g');
 %% Animación del Robot final
+hold on;
 anim = Animate('movie.mp4');
 for i=1:length(t)
-    robot.plot(qc(i,:));
+    robot.plot(q_out_norm(i,:));
     anim.add();
 end
 
 for i=length(t):-1:1
-    robot.plot(qc(i,:));
+    robot.plot(q_out_norm(i,:));
     anim.add();
 end
 anim.close();
 
 hold off
+
+%% Trayectoria generada por error numérico de joints
+Treal = robot.fkine(qc).T;
 
 %% Gráficos Joints
 figure(2);
