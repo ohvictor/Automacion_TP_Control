@@ -25,6 +25,8 @@ Tool = transl([1 0 0]);
 robot = SerialLink(L, 'tool', Tool);
 robot.name = "RR";
 
+robot_dis = robot.perturb(0.8);
+
 %% Posición inicial y final
 q0 = [pi/2,-pi/2];
 
@@ -144,7 +146,7 @@ Kpf = 160000*1000;
 %Kpf = Kp;
 %% 
 
-ej3_offset = 1e-5; % 1e-6
+ej3_offset = 0; % 1e-6
 
 %%
 
@@ -173,3 +175,5 @@ for i = 1:length(out.q.Time)
     %inv(out.J.Data(:,:,i))'*out.M.Data(:,:,i)*inv(out.J.Data(:,:,i)) - out.MX.Data(:,:,i)
     %out.alpha_f.Data(i,:)' - out.MX.Data(:,:,i)*out.f.Data(i,:)'
 end
+
+
