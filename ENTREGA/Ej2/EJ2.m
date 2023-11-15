@@ -150,6 +150,7 @@ ej3_offset = 1e-5; % 1e-6
 
 %%
 
+%{
 q_out_norm = out.q_out.Data;
 t = out.q_out.Time;
 
@@ -175,5 +176,4 @@ for i = 1:length(out.q.Time)
     %inv(out.J.Data(:,:,i))'*out.M.Data(:,:,i)*inv(out.J.Data(:,:,i)) - out.MX.Data(:,:,i)
     %out.alpha_f.Data(i,:)' - out.MX.Data(:,:,i)*out.f.Data(i,:)'
 end
-
-
+}%
