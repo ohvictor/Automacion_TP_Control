@@ -26,7 +26,7 @@ robot = SerialLink(L, 'tool', Tool);
 robot.name = "RR";
 
 robot_dis = robot.perturb(0.8);
-
+robot_dis.name = "RR_{dis}";
 %% Posición inicial y final
 q0 = [pi/2,-pi/2];
 
