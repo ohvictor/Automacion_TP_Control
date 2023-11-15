@@ -146,7 +146,7 @@ Kpf = 160000*1000;
 %Kpf = Kp;
 %% 
 
-ej3_offset = 0; % 1e-6
+ej3_offset = 1e-5; % 1e-6
 
 %%
 
