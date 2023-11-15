@@ -176,4 +176,11 @@ for i = 1:length(out.q.Time)
     %out.alpha_f.Data(i,:)' - out.MX.Data(:,:,i)*out.f.Data(i,:)'
 end
 
+%%
+%%
+
+q_out_norm = out.q.Data(1:1:end,:);
+T_out_norm = double(robot.fkine(out.q.Data(1:1:end,:)));
+T_in_norm = double(O_Tcart(:,:,1:2));
+t = out.q.Time(1:1:end);
 
